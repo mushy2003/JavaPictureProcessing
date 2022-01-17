@@ -11,21 +11,15 @@ import java.io.IOException;
  */
 public class Picture {
 
-  /**
-   * The internal image representation of this picture.
-   */
+  /** The internal image representation of this picture. */
   private final BufferedImage image;
 
-  /**
-   * Construct a new (blank) Picture object with the specified width and height.
-   */
+  /** Construct a new (blank) Picture object with the specified width and height. */
   public Picture(int width, int height) {
     image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
   }
 
-  /**
-   * Construct a new Picture from the image data in the specified file.
-   */
+  /** Construct a new Picture from the image data in the specified file. */
   public Picture(String filepath) {
     try {
       image = ImageIO.read(new File(filepath));
@@ -40,7 +34,7 @@ public class Picture {
    * @param x the x co-ordinate of the point
    * @param y the y co-ordinate of the point
    * @return <tt>true</tt> if the point lies within the boundaries of the picture, <tt>false</tt>
-   * otherwise.
+   *     otherwise.
    */
   public boolean contains(int x, int y) {
     return x >= 0 && y >= 0 && x < getWidth() && y < getHeight();
@@ -97,7 +91,7 @@ public class Picture {
    * @param y y-coordinate of the pixel value to return
    * @return the RGB components of the pixel-value located at (x,y).
    * @throws ArrayIndexOutOfBoundsException if the specified pixel-location is not contained within
-   *                                        the boundaries of this picture.
+   *     the boundaries of this picture.
    */
   public Color getPixel(int x, int y) {
     int rgb = image.getRGB(x, y);
@@ -138,11 +132,11 @@ public class Picture {
   /**
    * Update the pixel-value at the specified location.
    *
-   * @param x   the x-coordinate of the pixel to be updated
-   * @param y   the y-coordinate of the pixel to be updated
+   * @param x the x-coordinate of the pixel to be updated
+   * @param y the y-coordinate of the pixel to be updated
    * @param rgb the RGB components of the updated pixel-value
    * @throws ArrayIndexOutOfBoundsException if the specified pixel-location is not contained within
-   *                                        the boundaries of this picture.
+   *     the boundaries of this picture.
    */
   public void setPixel(int x, int y, Color rgb) {
 
@@ -151,13 +145,11 @@ public class Picture {
         y,
         0xff000000
             | (((0xff & rgb.getRed()) << 16)
-            | ((0xff & rgb.getGreen()) << 8)
-            | (0xff & rgb.getBlue())));
+                | ((0xff & rgb.getGreen()) << 8)
+                | (0xff & rgb.getBlue())));
   }
 
-  /**
-   * Returns a String representation of the RGB components of the picture.
-   */
+  /** Returns a String representation of the RGB components of the picture. */
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
@@ -178,4 +170,63 @@ public class Picture {
     sb.append("\n");
     return sb.toString();
   }
+
+  public void invert() {
+    for (int y = 0; y < getHeight(); y++) {
+      for (int x = 0; x < getWidth(); x++) {
+        Color pixel = getPixel(x, y);
+        setPixel(
+            x, y, new Color(255 - pixel.getRed(), 255 - pixel.getGreen(), 255 - pixel.getBlue()));
+      }
+    }
+  }
+
+  public void grayscale() {
+    for (int y = 0; y < getHeight(); y++) {
+      for (int x = 0; x < getWidth(); x++) {
+        Color pixel = getPixel(x, y);
+        int average = (pixel.getRed() + pixel.getBlue() + pixel.getGreen()) / 3;
+        Color newColor = new Color(average, average, average);
+        setPixel(x, y, newColor);
+      }
+    }
+  }
+
+  public Picture rotate(int angle) {
+    Picture newPic = new Picture(getWidth(), getHeight());
+    int centreX = (getWidth() - 1)/2;
+    int centreY = (getHeight() - 1)/2;
+    for (int y = 0; y < getHeight(); y++) {
+      for (int x = 0; x < getWidth(); x++) {
+        Color pixel = getPixel(x, y);
+        if (angle == 90) {
+          newPic.setPixel(y - centreY + centreX, centreX - x + centreY, pixel);
+        } else if (angle == 180) {
+          newPic.setPixel(2*centreX - x, 2*centreY - y, pixel);
+        } else {
+          newPic.setPixel(centreY - y + centreX, x - centreX + centreY, pixel);
+        }
+      }
+    }
+    return newPic;
+  }
+
+  public Picture flip(String direction) {
+    Picture newPic = this;
+    for (int y = 0; y < getHeight(); y++) {
+      for (int x = 0; x < getWidth(); x++) {
+        Color pixel = getPixel(x, y);
+        if (direction == "H") {
+          newPic.setPixel(-x + (getWidth() - 1), y, pixel);
+        } else {
+          newPic.setPixel(x, -y + (getHeight() - 1), pixel);
+        }
+      }
+    }
+    return newPic;
+  }
+
+  public void blend() {}
+
+  public void blur() {}
 }
