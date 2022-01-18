@@ -193,7 +193,7 @@ public class Picture {
   }
 
   public Picture rotate(int angle) {
-    Picture newPic = new Picture(getWidth(), getHeight());
+    Picture newPic = new Picture(this.getWidth(), this.getHeight());
     int centreX = (getWidth() - 1)/2;
     int centreY = (getHeight() - 1)/2;
     for (int y = 0; y < getHeight(); y++) {
@@ -212,14 +212,14 @@ public class Picture {
   }
 
   public Picture flip(String direction) {
-    Picture newPic = this;
+    Picture newPic = new Picture(this.getWidth(), this.getHeight());
     for (int y = 0; y < getHeight(); y++) {
       for (int x = 0; x < getWidth(); x++) {
         Color pixel = getPixel(x, y);
-        if (direction == "H") {
-          newPic.setPixel(-x + (getWidth() - 1), y, pixel);
+        if (direction.equals("H")) {
+          newPic.setPixel(-x + getWidth() - 1, y, pixel);
         } else {
-          newPic.setPixel(x, -y + (getHeight() - 1), pixel);
+          newPic.setPixel(x, -y + getHeight() - 1, pixel);
         }
       }
     }
