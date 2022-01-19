@@ -4,6 +4,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * A class that encapsulates and provides a simplified interface for manipulating an image. The
@@ -194,15 +195,15 @@ public class Picture {
 
   public Picture rotate(int angle) {
     Picture newPic = new Picture(this.getWidth(), this.getHeight());
-    int centreX = (getWidth() - 1)/2;
-    int centreY = (getHeight() - 1)/2;
+    int centreX = (getWidth() - 1) / 2;
+    int centreY = (getHeight() - 1) / 2;
     for (int y = 0; y < getHeight(); y++) {
       for (int x = 0; x < getWidth(); x++) {
         Color pixel = getPixel(x, y);
         if (angle == 90) {
-          newPic.setPixel(y - centreY + centreX, centreX - x + centreY, pixel);
+          newPic.setPixel(centreY - y + centreX, x - centreX + centreY, pixel);
         } else if (angle == 180) {
-          newPic.setPixel(2*centreX - x, 2*centreY - y, pixel);
+          newPic.setPixel(2 * centreX - x, 2 * centreY - y, pixel);
         } else {
           newPic.setPixel(centreY - y + centreX, x - centreX + centreY, pixel);
         }
@@ -226,7 +227,39 @@ public class Picture {
     return newPic;
   }
 
-  public void blend() {}
+  public static Picture blend(Picture[] pics) {
+    int minWidth = pics[0].getWidth();
+    int minHeight = pics[0].getHeight();
+    for (Picture pic : pics) {
+      if (pic.getWidth() < minWidth) {
+        minWidth = pic.getWidth();
+      }
+      if (pic.getHeight() < minHeight) {
+        minHeight = pic.getHeight();
+      }
+    }
+
+    final Picture blendedPic = new Picture(minWidth, minHeight);
+
+    for (int y = 0; y < minHeight; y++) {
+      for (int x = 0; x < minWidth; x++) {
+        int sumOfRed = 0;
+        int sumOfGreen = 0;
+        int sumOfBlue = 0;
+        for (Picture pic : pics) {
+          Color pixel = pic.getPixel(x, y);
+          sumOfRed += pixel.getRed();
+          sumOfGreen += pixel.getGreen();
+          sumOfBlue += pixel.getBlue();
+        }
+        int numOfPics = pics.length;
+        blendedPic.setPixel(
+            x, y, new Color(sumOfRed / numOfPics, sumOfGreen / numOfPics, sumOfBlue / numOfPics));
+      }
+    }
+
+    return blendedPic;
+  }
 
   public void blur() {}
 }
