@@ -194,15 +194,15 @@ public class Picture {
   }
 
   public Picture rotate(int angle) {
-    Picture oldPic = new Picture(getWidth(), getHeight());
-    Picture newPic = null;
     int rotateTimes = angle / 90;
+    Picture oldPic = this;
+    Picture newPic = null;
     for (int t = 0; t < rotateTimes; t++) {
-      newPic = new Picture(oldPic.getWidth(), oldPic.getHeight());
+      newPic = new Picture(oldPic.getHeight(), oldPic.getWidth());
       for (int y = 0; y < oldPic.getHeight(); y++) {
         for (int x = 0; x < oldPic.getWidth(); x++) {
           Color pixel = oldPic.getPixel(x, y);
-          newPic.setPixel(-y + (oldPic.getWidth() - 1), x, pixel);
+          newPic.setPixel(-y + oldPic.getHeight() - 1, x, pixel);
         }
       }
       oldPic = newPic;

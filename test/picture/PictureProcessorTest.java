@@ -9,8 +9,7 @@ import org.junit.rules.TemporaryFolder;
 
 public class PictureProcessorTest {
 
-  @Rule
-  public TemporaryFolder tmpFolder = new TemporaryFolder();
+  @Rule public TemporaryFolder tmpFolder = new TemporaryFolder();
 
   @Test
   public void invertBlack() throws IOException {
