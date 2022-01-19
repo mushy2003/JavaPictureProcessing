@@ -37,6 +37,10 @@ public class PictureProcessor {
       blended.saveAs(args[args.length - 1]);
 
 
+    } else if (args[0] == "blur") {
+      Picture pic = new Picture(args[1]);
+      Picture newPic = pic.blur();
+      newPic.saveAs(args[2]);
     }
 
   }

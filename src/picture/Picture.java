@@ -194,20 +194,18 @@ public class Picture {
   }
 
   public Picture rotate(int angle) {
-    Picture newPic = new Picture(this.getWidth(), this.getHeight());
-    int centreX = (getWidth() - 1) / 2;
-    int centreY = (getHeight() - 1) / 2;
-    for (int y = 0; y < getHeight(); y++) {
-      for (int x = 0; x < getWidth(); x++) {
-        Color pixel = getPixel(x, y);
-        if (angle == 90) {
-          newPic.setPixel(centreY - y + centreX, x - centreX + centreY, pixel);
-        } else if (angle == 180) {
-          newPic.setPixel(2 * centreX - x, 2 * centreY - y, pixel);
-        } else {
-          newPic.setPixel(centreY - y + centreX, x - centreX + centreY, pixel);
+    Picture oldPic = new Picture(getWidth(), getHeight());
+    Picture newPic = null;
+    int rotateTimes = angle / 90;
+    for (int t = 0; t < rotateTimes; t++) {
+      newPic = new Picture(oldPic.getWidth(), oldPic.getHeight());
+      for (int y = 0; y < oldPic.getHeight(); y++) {
+        for (int x = 0; x < oldPic.getWidth(); x++) {
+          Color pixel = oldPic.getPixel(x, y);
+          newPic.setPixel(-y + (oldPic.getWidth() - 1), x, pixel);
         }
       }
+      oldPic = newPic;
     }
     return newPic;
   }
@@ -261,5 +259,34 @@ public class Picture {
     return blendedPic;
   }
 
-  public void blur() {}
+  public Picture blur() {
+    Picture newPic = new Picture(getWidth(), getHeight());
+    for (int y = 0; y < getHeight(); y++) {
+      for (int x = 0; x < getWidth(); x++) {
+        Color pixel = getPixel(x, y);
+        if (contains(x - 1, y + 1)
+            && contains(x - 1, y - 1)
+            && contains(x + 1, y + 1)
+            && contains(x + 1, y - 1)) {
+          int redTotal = 0;
+          int greenTotal = 0;
+          int blueTotal = 0;
+          for (int a = y - 1; a < y + 2; a++) {
+            for (int b = x - 1; b < x + 2; b++) {
+              redTotal += getPixel(b, a).getRed();
+              greenTotal += getPixel(b, a).getGreen();
+              blueTotal += getPixel(b, a).getBlue();
+            }
+          }
+          int redAverage = redTotal / 9;
+          int greenAverage = greenTotal / 9;
+          int blueAverage = blueTotal / 9;
+          newPic.setPixel(x, y, new Color(redAverage, greenAverage, blueAverage));
+        } else {
+          newPic.setPixel(x, y, pixel);
+        }
+      }
+    }
+    return newPic;
+  }
 }
