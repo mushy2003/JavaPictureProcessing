@@ -92,22 +92,6 @@ public class Picture {
     return newPicture;
   }
 
-  protected Picture mosaic(List<Picture> pictures, int tileSize) {
-    int minHeight = getHeight();
-    int minWidth = getWidth();
-    for (Picture picture : pictures) {
-      if (minWidth > picture.getWidth()) {
-        minWidth = picture.getWidth();
-      }
-      if (minHeight > picture.getHeight()) {
-        minHeight = picture.getHeight();
-      }
-    }
-
-    // Not sure where tileSize comes in.
-    return null;
-  }
-
   private void forEachPixel(String transformation, int width, int height, Picture newPicture, int maxIntensity, Character direction, List<Picture> pictures) {
     for (int x = 0; x < width; x++) {
       for (int y = 0; y < height; y++) {
